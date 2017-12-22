@@ -12,16 +12,20 @@ static string const ne = "!=";
 
 using Regs = unordered_map<string, int>;
 
-void change(Regs& regs, string const & reg, string const& op, int const val) {
+void change(Regs& registers, int& max_seen, string const & reg_name, string const& op,
+		int const the_change) {
+	auto & reg_to_change = registers[reg_name];
 	if (op == inc) {
-		regs[reg] += val;
+		reg_to_change += the_change;
 	} else { // dec
-		regs[reg] -= val;
+		reg_to_change -= the_change;
 	}
+	max_seen = max(reg_to_change, max_seen);
 }
 
 int main() {
 	Regs regs;
+	int max_seen = numeric_limits<int>::min();
 	string reg_to_mod;
 	string inc_or_dec;
 	int steps;
@@ -37,13 +41,14 @@ int main() {
 				|| (bool_op == ge && lookup_value >= val)
 				|| (bool_op == eq && lookup_value == val)
 				|| (bool_op == ne && lookup_value != val)) {
-			change(regs, reg_to_mod, inc_or_dec, steps);
+			change(regs, max_seen, reg_to_mod, inc_or_dec, steps);
 		}
 	}
 	auto iter = max_element(begin(regs), end(regs),
 			[](Regs::value_type const& a, Regs::value_type const& b) {
 				return a.second < b.second;
 			});
-	cout << "Maximum register value is " << iter->second << '\n';
+	cout << "Maximum register value is " << iter->second << "\n"
+			"Highest register value seen during the process was " << max_seen << '\n';
 	return 0;
 }
