@@ -1,18 +1,19 @@
 #include <iostream>
 
-constexpr char cancel = '!';
-constexpr char garbage_start = '<';
-constexpr char garbage_end = '>';
-constexpr char group_start = '{';
-constexpr char group_end = '}';
+char const cancel = '!';
+char const garbage_start = '<';
+char const garbage_end = '>';
+char const group_start = '{';
+char const group_end = '}';
 
 int main()
 {
-	char ch;
-	int group_score = 0;
-	int group_level = 0;
-	bool in_garbage = false;
 	bool ignore_next = false;
+	bool in_garbage = false;
+	char ch;
+	int garbage_count = 0;
+	int group_level = 0;
+	int group_score = 0;
 	while (std::cin >> ch)
 		if (ignore_next)
 			ignore_next = false;
@@ -23,6 +24,9 @@ int main()
 				break;
 			case cancel:
 				ignore_next = true;
+				break;
+			default:
+				garbage_count++;
 				break;
 			}
 		else
@@ -37,5 +41,6 @@ int main()
 				in_garbage = true;
 				break;
 			}
-	std::cout << "Group score " << group_score << '\n';
+	std::cout << "Group score " << group_score << "\n"
+			"Garbage count " << garbage_count << '\n';
 }
