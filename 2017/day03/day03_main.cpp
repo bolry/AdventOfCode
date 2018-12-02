@@ -1,53 +1,47 @@
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
-#include <vector>
 
-//constexpr int input = 277678;
+namespace {
 
-int constexpr input = 4;
-
-enum class Direction {
-	right, up, left, down
+enum class Step {
+  right, up, left, down
 };
 
-int main() {
-	Direction direction = Direction::right;
-	int width = 0;
-	int x_offset = 0;
-	int y_offset = 0;
-	int i = 1;
-	int running_total = 0;
-	while (i <= input) {
-		switch (direction) {
-		case Direction::right:
-			++x_offset;
-			if(x_offset > width){
-				++width;
-				direction = Direction::up;
-			}
-			break;
-		case Direction::up:
-			++y_offset;
-			if(y_offset == width){
-				direction = Direction::left;
-			}
-			break;
-		case Direction::left:
-			--x_offset;
-			if(x_offset == -width){
-				direction = Direction::down;
-			}
-			break;
-		case Direction::down:
-			--y_offset;
-			if(y_offset == -width)
-			{
-				direction = Direction::right;
-			}
-			break;
-		}
-		i += running_total;
-		running_total = i;
-	}
-	std::cout << "Next number larger than " << input << " is "
-			<< i << '\n';
+constexpr int const input = 277678;
+
+}  // close anonymous namespace
+
+int main() try {
+  std::cout.exceptions(std::cout.badbit | std::cout.eofbit | std::cout.failbit);
+  Step dir = Step::right;
+  int width = 0;
+  int x_offset = 0;
+  int y_offset = 0;
+  int square = 1;
+  for (; square < input; square++) {
+    switch (dir) {
+      case Step::right:
+        if (++x_offset > width) {
+          ++width;
+          dir = Step::up;
+        }
+        break;
+      case Step::up: if (++y_offset == width) dir = Step::left;
+        break;
+      case Step::left: if (--x_offset == -width) dir = Step::down;
+        break;
+      case Step::down: if (--y_offset == -width)dir = Step::right;
+        break;
+    }
+  }
+  std::cout << "Manhattan distance for " << input << " is "
+            << std::abs(x_offset) + std::abs(y_offset) << '\n';
+}
+catch (std::bad_alloc const &) {
+  std::fputs("Sorry, out-of-memory\n", stderr);
+  std::fflush(stderr);
+}
+catch (std::exception const &x) {
+  std::cerr << x.what() << '\n' << std::flush;
 }
