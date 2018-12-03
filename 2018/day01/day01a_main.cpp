@@ -1,8 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <new>
 #include <numeric>
 
 int main(int argc, char *argv[])
