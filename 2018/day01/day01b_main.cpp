@@ -1,9 +1,11 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <new>
 #include <set>
 #include <vector>
 
@@ -40,10 +42,14 @@ try {
 }
 catch (std::bad_alloc const &) {
     std::fputs("Sorry, out-of-memory\n", stderr);
+    std::fflush(stderr);
+    return EXIT_FAILURE;
 }
 catch (std::exception const &e) {
-    std::cerr << "Got exception: " << e.what() << '\n';
+    std::cerr << "Got exception: " << e.what() << '\n' << std::flush;
+    return EXIT_FAILURE;
 }
 catch (...) {
     std::cerr << "Unexpected unhandled error\n";
+    return EXIT_FAILURE;
 }
