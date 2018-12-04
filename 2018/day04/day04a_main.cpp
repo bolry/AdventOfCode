@@ -66,23 +66,24 @@ int guard_with_most_sleep_time(std::vector<Row> const &sorted_log) {
   Map sleep_log;
   int current_guard_id = -1;
   std::string key;
-  int sleep_time = -1;
   int last_sleep_start;
   for (auto const &row : sorted_log) {
     std::istringstream iss(row.log_entry);
     iss >> key;
     if (key == KGuard) {
-      sleep_log[current_guard_id] = sleep_time;
       char hash;
       iss >> hash >> current_guard_id;
-      sleep_time = 0;
     } else if (key == KFall) {
       last_sleep_start = row.tod.minute;
     } else if (key == KWakeup) {
-      sleep_time += row.tod.minute - last_sleep_start;
+      int const sleep_time = row.tod.minute - last_sleep_start;
+      sleep_log[current_guard_id] += sleep_time;
     } else {
       throw std::runtime_error("Found unknown keyword: " + key);
     }
+  }
+  for (auto const &e : sleep_log) {
+    std::cout << "id: " << e.first << " sleep: " << e.second << '\n';
   }
   auto sleepiest_guard_id =
       std::max_element(sleep_log.begin(), sleep_log.end(), [](Map::value_type const &a, Map::value_type const &b) {
