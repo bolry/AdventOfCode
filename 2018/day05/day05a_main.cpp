@@ -24,13 +24,14 @@ try {
   std::string polymer;
   polymer_file >> polymer;
   //std::cout << '`' << polymer << "'\n";
+  auto reaction = polymer.begin();
   while (true) {
-    auto
-        reaction = std::adjacent_find(polymer.begin(), polymer.end(), [](unsigned char const a, unsigned char const b) {
+    reaction = std::adjacent_find(reaction, polymer.end(), [](unsigned char const a, unsigned char const b) {
       return a != b && std::toupper(a) == std::toupper(b);
     });
     if (reaction == polymer.end()) break;
-    polymer.erase(reaction, reaction + 2);
+    reaction = polymer.erase(reaction, reaction + 2);
+    if (reaction != polymer.begin()) --reaction;
     //std::cout << '`' << polymer << "'\n";
   }
   std::cout << "Polymer length is " << polymer.size() << '\n';
