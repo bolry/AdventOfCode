@@ -62,7 +62,7 @@ std::string const KGuard = "Guard";
 std::string const KFall = "falls";
 std::string const KWakeup = "wakes";
 
-int guard_with_most_sleep_time(std::vector<Row> const &sorted_log) {
+static int guard_with_most_sleep_time(std::vector<Row> const &sorted_log) {
   Map sleep_log;
   int current_guard_id = -1;
   std::string key;
@@ -92,13 +92,11 @@ int guard_with_most_sleep_time(std::vector<Row> const &sorted_log) {
   return sleepiest_guard_id->first;
 }
 
-}
-
-int best_sleep_miniute(int const id, std::vector<Row> const &sorted_log) {
+static int best_sleep_minute(int const id, std::vector<Row> const &sorted_log) {
   std::string key;
   int last_sleep_start = 0;
   int current_guard_id = -1;
-  std::array<int, 60> sleep_minutes;
+  std::array<int, 60> sleep_minutes = {};
   for (auto const &row : sorted_log) {
     std::istringstream iss(row.log_entry);
     iss >> key;
@@ -114,6 +112,9 @@ int best_sleep_miniute(int const id, std::vector<Row> const &sorted_log) {
   }
   return std::distance(sleep_minutes.begin(), std::max_element(sleep_minutes.begin(), sleep_minutes.end()));
 }
+
+}
+
 int main(int argc, char *argv[])
 try {
   std::cout.exceptions(std::cout.badbit | std::cout.eofbit | std::cout.failbit);
@@ -132,7 +133,7 @@ try {
   std::cout << log.back() << '\n';
   int const sleepy_guard_id = guard_with_most_sleep_time(log);
   std::cout << "Sleepy Guard id: " << sleepy_guard_id << '\n';
-  int const sleepy_minute = best_sleep_miniute(sleepy_guard_id, log);
+  int const sleepy_minute = best_sleep_minute(sleepy_guard_id, log);
   std::cout << "Best time to sleep: " << sleepy_minute << '\n';
 
   std::cout << "Result day 4 A is: " << sleepy_guard_id * sleepy_minute << '\n' << std::flush;
