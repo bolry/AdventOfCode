@@ -7,7 +7,6 @@
 #include <iostream>
 #include <iterator>
 #include <new>
-#include <set>
 #include <vector>
 
 namespace {
@@ -24,19 +23,15 @@ std::istream &operator>>(std::istream &is, Coordinate &coordinate) {
   return is >> coordinate.x >> comma_ignore >> coordinate.y;
 }
 
-void findClosestPoint(int x, int y, std::vector<Coordinate> const &vector, std::vector<std::vector<int>> &grid) {
-  int shortest = 10000;
-  int best_id = -1;
+void CountDistancesManhattanStyle(int x,
+                                  int y,
+                                  std::vector<Coordinate> const &vector,
+                                  std::vector<std::vector<int>> &grid) {
+  int & point = grid[y][x];
   for (int coord_id = 0, last = static_cast<int>(vector.size()); coord_id < last; ++coord_id) {
-    int manhattan_dist = std::abs(x - vector[coord_id].x) + std::abs(y - vector[coord_id].y);
-    if (manhattan_dist < shortest) {
-      shortest = manhattan_dist;
-      best_id = coord_id;
-    } else if (manhattan_dist == shortest) {
-      best_id = -1;
-    }
+    int const manhattan_dist = std::abs(x - vector[coord_id].x) + std::abs(y - vector[coord_id].y);
+    point += manhattan_dist;
   }
-  grid[y][x] = best_id;
 }
 
 }
@@ -71,7 +66,6 @@ try {
     for (auto const &c : vc) m = std::max(m, c.y);
     return m;
   }(coordinates);
-  std::copy(coordinates.begin(), coordinates.end(), std::ostream_iterator<Coordinate>(std::cout, "\n"));
   std::cout << "\nmin x: " << min_x << " max_x " << max_x << '\n'
             << "min y: " << min_y << " max_y " << max_y << '\n';
   int const width = max_x - min_x + 1;
@@ -79,31 +73,17 @@ try {
   std::cout << "width: " << width << '\n'
             << "height: " << height << "\n\n";
   for (auto &c : coordinates) c.x -= min_x, c.y -= min_y;
-  std::copy(coordinates.begin(), coordinates.end(), std::ostream_iterator<Coordinate>(std::cout, "\n"));
   std::vector<std::vector<int> > grid(height, std::vector<int>(width));
   for (int y = 0; y < height; y++)
     for (int x = 0; x < width; x++)
-      findClosestPoint(x, y, coordinates, grid);
-  std::vector<int> freq(coordinates.size()+1);
+      CountDistancesManhattanStyle(x, y, coordinates, grid);
+  int freq = 0;
   for (auto const &row : grid) {
     for (auto const dot : row) {
-      std::cout << dot << " ";
-      freq[dot+1]++;
+      if(dot < 10000) freq++;
     }
-    std::cout << '\n';
   }
-  std::set<int> infinity_list;
-  infinity_list.insert(grid.front().begin(), grid.front().end());
-  infinity_list.insert(grid.back().begin(), grid.back().end());
-  for (int y = 1, max_y = static_cast<int>(grid.size()) - 1; y < max_y; y++) {
-    infinity_list.insert(grid[y].front());
-    infinity_list.insert(grid[y].back());
-  }
-  for( int black_listed: infinity_list){
-    freq[black_listed+1] = -1;
-  }
-  auto winner_pos= std::max_element(freq.begin(), freq.end());
-  std::cout << "Day 6 A result " << *winner_pos << " at coordinate " << std::distance(freq.begin(), winner_pos) << '\n';
+  std::cout << "Day 6 B region size is " << freq << '\n';
   return EXIT_SUCCESS;
 }
 catch (std::bad_alloc const &) {
