@@ -8,38 +8,35 @@
 
 namespace {
 struct Node {
-  int nr_child_nodes = 0;
-  int nr_metadata = 0;
-  std::vector<std::unique_ptr<Node>> child_nodes;
+  std::vector<Node> child_nodes;
   std::vector<int> metadata;
 };
 
 std::istream &operator>>(std::istream &fin, Node &node) {
-  fin >> node.nr_child_nodes >> node.nr_metadata;
+  int nr_child_nodes;
+  int nr_metadata;
+  fin >> nr_child_nodes >> nr_metadata;
   if (!fin) throw std::runtime_error("problem readin instream");
-  for (int ch_id = 0; ch_id < node.nr_child_nodes; ch_id++) {
-    auto p_node = std::make_unique<Node>();
-    if (fin >> *p_node)
-      node.child_nodes.push_back(std::move(p_node));
-    else
+
+  node.child_nodes.resize(nr_child_nodes);
+  for (auto &ch_node : node.child_nodes)
+    if (!(fin >> ch_node))
       throw std::runtime_error("problme reading instream");
-  }
-  for (int meta_id = 0; meta_id < node.nr_metadata; meta_id++) {
-    int md;
-    if (fin >> md)
-      node.metadata.push_back(md);
-    else
+
+  node.metadata.resize(nr_metadata);
+  for (int &md : node.metadata)
+    if (!(fin >> md))
       throw std::runtime_error("problem reading instream");
-  }
+
   return fin;
 }
 
 int sumDataVersionB(Node const &node) {
-  if (node.nr_child_nodes == 0) return std::accumulate(node.metadata.begin(), node.metadata.end(), 0);
+  if (node.child_nodes.size() == 0) return std::accumulate(node.metadata.begin(), node.metadata.end(), 0);
   int sum = 0;
   for (int const index : node.metadata)
-    if (0 < index && index <= node.nr_child_nodes)
-      sum += sumDataVersionB(*node.child_nodes[index - 1]);
+    if (0 < index && index <= node.child_nodes.size())
+      sum += sumDataVersionB(node.child_nodes[index - 1]);
   return sum;
 }
 
