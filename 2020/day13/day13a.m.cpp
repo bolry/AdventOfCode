@@ -1,6 +1,3 @@
-//#define _GLIBCXX_DEBUG
-//#define _GLIBCXX_DEBUG_PEDANTIC
-
 #include <algorithm>
 #include <cstdint>
 #include <fstream>

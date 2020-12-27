@@ -1,5 +1,3 @@
-#define _GLIBCXX_DEBUG
-#define _GLIBCXX_DEBUG_PEDANTIC
 #include <array>
 #include <bitset>
 #include <fstream>
