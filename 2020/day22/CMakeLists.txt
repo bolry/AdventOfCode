@@ -1,0 +1,131 @@
+cmake_minimum_required(VERSION 3.17)
+
+find_program(CCACHE_PROGRAM ccache)
+if (CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+endif ()
+
+project(AdventOfCode2020Day22)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
+set(CMAKE_CXX_STANDARD 20)
+
+add_executable(aoc2020d22a)
+target_include_directories(aoc2020d22a PRIVATE "")
+target_sources(aoc2020d22a PRIVATE day22a.m.cpp)
+if (MSVC)
+    target_compile_options(aoc2020d22a PRIVATE
+            /W4 # Baseline reasonable warnings
+            /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
+            /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
+            /w14263 # 'function': member function does not override any base class virtual member function
+            /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
+            # be destructed correctly
+            /w14287 # 'operator': unsigned/negative constant mismatch
+            /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside
+            # the for-loop scope
+            /w14296 # 'operator': expression is always 'boolean_value'
+            /w14311 # 'variable': pointer truncation from 'type1' to 'type2'
+            /w14545 # expression before comma evaluates to a function which is missing an argument list
+            /w14546 # function call before comma missing argument list
+            /w14547 # 'operator': operator before comma has no effect; expected operator with side-effect
+            /w14549 # 'operator': operator before comma has no effect; did you intend 'operator'?
+            /w14555 # expression has no effect; expected expression with side- effect
+            /w14619 # pragma warning: there is no warning number 'number'
+            /w14640 # Enable warning on thread un-safe static member initialization
+            /w14826 # Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior.
+            /w14906 # wide string literal cast to 'LPSTR'
+            /w14906 # string literal cast to 'LPWSTR'
+            /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+            /permissive- # standards conformance mode for MSVC compiler.
+            )
+endif ()
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(aoc2020d22a PRIVATE
+            -Wall
+            -Wextra # reasonable and standard
+            -Wshadow # warn the user if a variable declaration shadows one from a parent context
+            -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor. This helps
+            # catch hard to track down memory errors
+            -Wold-style-cast # warn for c-style casts
+            -Wcast-align # warn for potential performance problem casts
+            -Wunused # warn on anything being unused
+            -Woverloaded-virtual # warn if you overload (not override) a virtual function
+            -Wpedantic # warn if non-standard C++ is used
+            -Wconversion # warn on type conversions that may lose data
+            -Wsign-conversion # warn on sign conversions
+            -Wnull-dereference # warn if a null dereference is detected
+            -Wdouble-promotion # warn if float is implicit promoted to double
+            -Wformat=2 # warn on security issues around functions that format output (ie printf)
+            -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
+            )
+endif ()
+if (NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(aoc2020d22a PRIVATE
+            -Wduplicated-cond # warn if if / else chain has duplicated conditions
+            -Wduplicated-branches # warn if if / else branches have duplicated code
+            -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
+            -Wuseless-cast # warn if you perform a cast to the same type
+            )
+endif ()
+
+
+add_executable(aoc2020d22b)
+target_include_directories(aoc2020d22b PRIVATE "")
+target_sources(aoc2020d22b PRIVATE day22b.m.cpp)
+if (MSVC)
+    target_compile_options(aoc2020d22b PRIVATE
+            /W4 # Baseline reasonable warnings
+            /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
+            /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
+            /w14263 # 'function': member function does not override any base class virtual member function
+            /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
+            # be destructed correctly
+            /w14287 # 'operator': unsigned/negative constant mismatch
+            /we4289 # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside
+            # the for-loop scope
+            /w14296 # 'operator': expression is always 'boolean_value'
+            /w14311 # 'variable': pointer truncation from 'type1' to 'type2'
+            /w14545 # expression before comma evaluates to a function which is missing an argument list
+            /w14546 # function call before comma missing argument list
+            /w14547 # 'operator': operator before comma has no effect; expected operator with side-effect
+            /w14549 # 'operator': operator before comma has no effect; did you intend 'operator'?
+            /w14555 # expression has no effect; expected expression with side- effect
+            /w14619 # pragma warning: there is no warning number 'number'
+            /w14640 # Enable warning on thread un-safe static member initialization
+            /w14826 # Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior.
+            /w14906 # wide string literal cast to 'LPSTR'
+            /w14906 # string literal cast to 'LPWSTR'
+            /w14928 # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+            /permissive- # standards conformance mode for MSVC compiler.
+            )
+endif ()
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(aoc2020d22b PRIVATE
+            -Wall
+            -Wextra # reasonable and standard
+            -Wshadow # warn the user if a variable declaration shadows one from a parent context
+            -Wnon-virtual-dtor # warn the user if a class with virtual functions has a non-virtual destructor. This helps
+            # catch hard to track down memory errors
+            -Wold-style-cast # warn for c-style casts
+            -Wcast-align # warn for potential performance problem casts
+            -Wunused # warn on anything being unused
+            -Woverloaded-virtual # warn if you overload (not override) a virtual function
+            -Wpedantic # warn if non-standard C++ is used
+            -Wconversion # warn on type conversions that may lose data
+            -Wsign-conversion # warn on sign conversions
+            -Wnull-dereference # warn if a null dereference is detected
+            -Wdouble-promotion # warn if float is implicit promoted to double
+            -Wformat=2 # warn on security issues around functions that format output (ie printf)
+            -Wmisleading-indentation # warn if indentation implies blocks where blocks do not exist
+            )
+endif ()
+if (NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(aoc2020d22b PRIVATE
+            -Wduplicated-cond # warn if if / else chain has duplicated conditions
+            -Wduplicated-branches # warn if if / else branches have duplicated code
+            -Wlogical-op # warn about logical operations being used where bitwise were probably wanted
+            -Wuseless-cast # warn if you perform a cast to the same type
+            )
+endif ()
