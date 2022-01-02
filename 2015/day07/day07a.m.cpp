@@ -1,111 +1,112 @@
-#include <cstdlib>
+#define _GLIBCXX_DEBUG
+#define _GLIBCXX_DEBUG_PEDANTIC
+#define _LIBCPP_DEBUG 1
+
+#include <cassert>
+#include <cctype>
+#include <charconv>
+#include <cstdint>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <iterator>
-#include <memory>
-#include <ostream>
-#include <unordered_map>
+#include <string>
+#include <string_view>
+#include <variant>
 #include <vector>
 
-using namespace std::literals;
+namespace {
+constexpr int kBase = 36;
 
-namespace
-{
-struct Row
-{
-   std::string left;
-   std::string right;
-   operator std::pair<std::string, std::string>() const
-   {
-      return {right, left};
-   }
-   friend std::istream& operator>>(std::istream& in, Row& row)
-   {
-      std::string line;
-      if(std::getline(in, line))
-      {
-         constexpr auto arrow = " -> "sv;
-         auto const pos       = line.find(arrow);
-         row.left             = line.substr(0, pos);
-         row.right            = line.substr(pos + size(arrow));
+enum Op {
+  And,
+  Or,
+  Not,
+  Lshift,
+  Rshift,
+  Value,
+  Variable,
+};
+
+using U16 = std::uint16_t;
+
+struct Id {
+  int id;
+};
+
+struct Val {
+  U16 val;
+};
+
+struct Tuple {
+  Op op;
+  std::variant<Id, Val> m0;
+  std::variant<Id, Val> m1;
+};
+using Vec = std::vector<Tuple>;
+
+} // namespace
+
+int main() {
+  using namespace std::string_view_literals;
+
+  std::ifstream in("../input2.txt");
+  Vec wiring;
+  wiring.resize(1 + std::invoke([] {
+                  constexpr char str[] = "zz";
+                  std::size_t result{};
+                  std::from_chars(str, str + 2, result, kBase);
+                  return result;
+                }));
+  std::string m0, m1, m2, m3, m4;
+  while (in >> m0 >> m1 >> m2) {
+    constexpr auto kArrow = "->"sv;
+    if (m1 == kArrow) // "123 -> a" or "b -> a"
+    {
+      std::size_t const idx = std::stoul(m2, 0, kBase);
+      if (std::isalpha(static_cast<unsigned char>(m0.front()))) {
+        wiring[idx].op = Op::Variable;
+        std::get<Id>(wiring[idx].m0).id = std::stoi(m0, 0, kBase);
+      } else {
+        wiring[idx].op  = Op::Value;
+        std::get<Val>(wiring[idx].m0).val =
+            static_cast<U16>(std::stoul(m0, 0, kBase));
       }
-      return in;
-   }
-};
-#if 0
-struct Connect
-{
-   std::string row;
-   friend std::istream& operator>>(std::istream& in, Connect& connect)
-   {
-      std::getline(in, connect.row);
-      return in;
-   }
-};
-struct Gate
-{
-   virtual ~Gate()   = 0;
-   Gate()            = default;
-   Gate(Gate const&) = delete;
-   Gate& operator=(Gate const&) = delete;
-};
-Gate::~Gate() = default;
-struct Sig2 : Gate
-{
-};
-struct Signal2 : Gate
-{
-};
-struct And2 : Gate
-{
-};
-struct Lshift2 : Gate
-{
-};
-struct Not2 : Gate
-{
-};
-struct Or2 : Gate
-{
-};
-struct Rshift2 : Gate
-{
-};
-
-template <typename IdentifierType, typename ProductCreator>
-class Factory
-{
-   std::unordered_map<IdentifierType, ProductCreator> map_;
-
-public:
-   bool Register(IdentifierType const& id, ProductCreator creator)
-   {
-      return map_.emplace(id, creator).second;
-   }
-   bool Unregister(IdentifierType const& id)
-   {
-      return map_.erase(id) == 1;
-   }
-   template <class... A>
-   auto CreateObject(IdentifierType const& id, A&&... a) const
-   {
-      if(auto i = map_.find(id); i != map_.end())
-      {
-         return (i->second)(std::forward<A>(a)...);
+    } else if (m0 == "NOT"sv) // "NOT a -> b"
+    {
+      in >> m3;
+      assert(in && (m2 == kArrow));
+      std::size_t const idx = std::stoul(m3, 0, kBase);
+      wiring[idx].op = Op::Not;
+      std::get<Id>(wiring[idx].m0).id = std::stoi(m1, 0, kBase);
+    } else if (m1 == "AND"sv || m1 == "OR"sv) {
+      in >> m3 >> m4;
+      assert(in && (m3 == kArrow));
+      std::size_t const idx = std::stoul(m4, 0, kBase);
+      if (m1 == "AND"sv)
+        wiring[idx].op = Op::And;
+      else
+        wiring[idx].op = Op::Or;
+      if (std::isalpha(static_cast<unsigned char>(m0.front()))) {
+        std::get<Id>(wiring[idx].m0).id = std::stoi(m0, 0, kBase);
+      } else {
+        std::get<Val>(wiring[idx].m0).val =
+            static_cast<U16>(std::stoul(m0, 0, kBase));
       }
-      throw std::runtime_error(
-         "Unknown id: `" + id + '\'');  // OR return decltype((i->second)())();
-   }
-};
-#endif
-
-}  // namespace
-
-int main()
-{
-   std::ifstream in("../input2.txt");
-   std::unordered_map<std::string, std::string> wiring;
-   transform(      std::istream_iterator<Row>{in}, std::istream_iterator<Row>{});
-   std::cout << std::endl;
-   return EXIT_SUCCESS;
+      std::get<Id>(wiring[idx].m1).id = std::stoi(m2, 0, kBase);
+    } else if (m1.ends_with("SHIFT"sv)) {
+      in >> m3 >> m4;
+      assert(in && (m3 == kArrow));
+      std::size_t const idx = std::stoul(m4, 0, kBase);
+      if (m1 == "LSHIFT"sv)
+        wiring[idx].op = Op::Lshift;
+      else
+        wiring[idx].op = Op::Rshift;
+      std::get<Id>(wiring[idx].m0).id = std::stoi(m0, 0, kBase);
+      std::get<Val>(wiring[idx].m1).val =
+          static_cast<U16>(std::stoul(m2, 0, kBase));
+    } else {
+      assert(false);
+    }
+  }
 }

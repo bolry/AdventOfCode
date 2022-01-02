@@ -8,8 +8,8 @@ endif ()
 
 project(AdventOfCode2015Day07)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 add_executable(aoc2015d07a)
 target_include_directories(aoc2015d07a PRIVATE "")
@@ -19,7 +19,7 @@ if (MSVC)
             /W4 # Baseline reasonable warnings
             /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
             /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
-            /w14263 # 'function': member function does not override any base class virtual member function
+            /w14263 # 'function': member function does not override any kBase class virtual member function
             /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
             # be destructed correctly
             /w14287 # 'operator': unsigned/negative constant mismatch
@@ -70,7 +70,6 @@ if (NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" AND CMAKE_CXX_COMPILER_ID STREQU
             )
 endif ()
 
-
 add_executable(aoc2015d07b)
 target_include_directories(aoc2015d07b PRIVATE "")
 target_sources(aoc2015d07b PRIVATE day07b.m.cpp)
@@ -79,7 +78,7 @@ if (MSVC)
             /W4 # Baseline reasonable warnings
             /w14242 # 'identifier': conversion from 'type1' to 'type1', possible loss of data
             /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
-            /w14263 # 'function': member function does not override any base class virtual member function
+            /w14263 # 'function': member function does not override any kBase class virtual member function
             /w14265 # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not
             # be destructed correctly
             /w14287 # 'operator': unsigned/negative constant mismatch
