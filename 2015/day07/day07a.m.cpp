@@ -1,6 +1,6 @@
 #define _GLIBCXX_DEBUG
 #define _GLIBCXX_DEBUG_PEDANTIC
-#define _LIBCPP_DEBUG 1
+#define LIBCXX_ENABLE_DEBUG_MODE 1
 
 #include <cassert>
 #include <cctype>
