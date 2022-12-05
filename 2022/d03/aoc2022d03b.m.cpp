@@ -1,3 +1,13 @@
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <cctype>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <string>
+
 int main()
 {
    using std::string;
