@@ -1,3 +1,16 @@
+#include <algorithm>
+#include <cassert>
+#include <charconv>
+#include <cstdlib>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <iterator>
+#include <numeric>
+#include <string>
+#include <system_error>
+#include <vector>
+
 int main()
 {
    std::ifstream ifs("../input.txt");
