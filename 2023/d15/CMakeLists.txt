@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.24...3.25)
+
+find_program(CCACHE_PROGRAM ccache)
+if (CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+endif ()
+
+project(AoC2023d15)
+
+set(CMAKE_CXX_EXTENSIONS YES)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED NO)
+set(CMAKE_C_EXTENSIONS YES)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED NO)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    add_compile_options(-stdlib=libc++)
+    add_link_options(-stdlib=libc++)
+endif ()
+
+
+add_library(warnings INTERFACE)
+if (MSVC)
+    target_compile_options(warnings INTERFACE
+            /W4 /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311
+            /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826
+            /w14905 /w14906 /w14928 /permissive-
+    )
+else ()
+    if (CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR
+            CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(warnings INTERFACE
+                -Wall -Wextra -Wextra-semi -Wshadow -Wnon-virtual-dtor
+                -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual
+                -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference
+                -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough
+        )
+    endif ()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(warnings INTERFACE
+                -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches
+                -Wlogical-op -Wuseless-cast
+        )
+    endif ()
+endif ()
+
+add_library(MyCommonPCH INTERFACE)
+if (NOT MSVC AND NOT CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+    target_precompile_headers(MyCommonPCH INTERFACE <bits/stdc++.h>)
+    target_include_directories(MyCommonPCH INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>)
+endif ()
+#target_compile_definitions(MyCommonPCH INTERFACE _GLIBCXX_DEBUG)
+target_link_libraries(MyCommonPCH INTERFACE warnings)
+
+add_executable(aoc2023d15a aoc2023d15a.m.cpp)
+#target_compile_definitions(aoc2023d15a PRIVATE _GLIBCXX_DEBUG)
+target_link_libraries(aoc2023d15a PRIVATE warnings MyCommonPCH)
+
+add_executable(aoc2023d15b aoc2023d15b.m.cpp)
+#target_compile_definitions(aoc2023d15b PRIVATE _GLIBCXX_DEBUG)
+target_link_libraries(aoc2023d15b PRIVATE warnings MyCommonPCH)
