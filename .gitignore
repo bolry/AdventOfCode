@@ -34,3 +34,4 @@ input.txt*
 *.app
 **/cmake-build-*/
 **/.idea/
+input*.txt
